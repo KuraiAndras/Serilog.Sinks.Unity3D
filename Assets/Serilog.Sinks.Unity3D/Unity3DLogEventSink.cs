@@ -1,4 +1,5 @@
-﻿using MainThreadDispatcher.Unity;
+﻿using MainThreadDispatcher;
+using MainThreadDispatcher.Unity;
 using Serilog.Core;
 using Serilog.Events;
 using System;
@@ -9,7 +10,7 @@ namespace Serilog.Sinks.Unity3D
     public sealed class Unity3DLogEventSink : ILogEventSink
     {
         private readonly IFormatProvider _formatProvider;
-        private readonly UnityMainThreadDispatcher _dispatcher;
+        private readonly IMainThreadDispatcher _dispatcher;
 
         public Unity3DLogEventSink(IFormatProvider formatProvider)
         {
