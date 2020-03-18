@@ -1,9 +1,10 @@
-﻿using Serilog.Core;
+﻿using MainThreadDispatcher.Unity;
+using Serilog.Core;
 using Serilog.Events;
 using System;
 using UnityEngine;
 
-namespace Serilog.Sinks.Unity3D.Serilog.Sinks.Unity3D
+namespace Serilog.Sinks.Unity3D
 {
     public sealed class Unity3DLogEventSink : ILogEventSink
     {
@@ -15,7 +16,7 @@ namespace Serilog.Sinks.Unity3D.Serilog.Sinks.Unity3D
         {
             var message = logEvent.RenderMessage(_formatProvider);
 
-            Debug.Log(message);
+            UnityMainThreadDispatcherExtensions.Instance.Invoke(() => Debug.Log(message));
         }
     }
 }

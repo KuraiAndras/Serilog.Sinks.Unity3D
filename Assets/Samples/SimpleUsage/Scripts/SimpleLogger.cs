@@ -1,5 +1,5 @@
 ﻿using Serilog;
-using Serilog.Sinks.Unity3D.Serilog.Sinks.Unity3D;
+using Serilog.Sinks.Unity3D;
 using UnityEngine;
 using UnityEngine.UI;
 
