@@ -1,7 +1,7 @@
 ﻿using Serilog.Configuration;
 using System;
 
-namespace Serilog.Sinks.Unity3D.Serilog.Sinks.Unity3D
+namespace Serilog.Sinks.Unity3D
 {
     public static class UnitySinkExtensions
     {
