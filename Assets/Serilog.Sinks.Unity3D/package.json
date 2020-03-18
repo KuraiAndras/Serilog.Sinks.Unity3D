@@ -4,6 +4,6 @@
     "displayName": "Serilog Sink for Unity 3D",
     "version": "1.0.0",
     "dependencies": {
-        "com.mainthreaddispatcher.unity" : "1.0.0"
+        "com.mainthreaddispatcher.unity" : "1.0.1"
     }
 }
