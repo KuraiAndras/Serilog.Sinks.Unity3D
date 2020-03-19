@@ -1,5 +1,7 @@
 # Serilog.Sinks.Unity3D
 
+[![openupm](https://img.shields.io/npm/v/com.serilog.sinks.unity3d?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.serilog.sinks.unity3d/)
+
 Serilog sink for Unity3D, logs to Unity Debugger
 
 # Usage
