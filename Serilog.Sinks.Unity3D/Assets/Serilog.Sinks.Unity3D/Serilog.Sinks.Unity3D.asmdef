@@ -1,0 +1,15 @@
+{
+    "name": "Serilog.Sinks.Unity3D",
+    "references": [
+        "MainThreadDispatcher.Unity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
