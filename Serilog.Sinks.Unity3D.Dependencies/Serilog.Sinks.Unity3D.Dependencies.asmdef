@@ -1,8 +1,6 @@
 {
-    "name": "Serilog.Sinks.Unity3D",
-    "references": [
-        "MainThreadDispatcher.Unity"
-    ],
+    "name": "Serilog.Sinks.Unity3D.Dependencies",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
