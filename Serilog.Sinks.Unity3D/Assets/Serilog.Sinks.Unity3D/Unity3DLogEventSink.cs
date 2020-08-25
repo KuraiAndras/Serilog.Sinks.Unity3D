@@ -20,8 +20,7 @@ namespace Serilog.Sinks.Unity3D
             _dispatcher = UnityMainThreadDispatcherExtensions.Instance;
         }
 
-        public void Emit(LogEvent logEvent)
-        {
+        public void Emit(LogEvent logEvent) =>
             _dispatcher.Invoke(() =>
             {
                 using (var buffer = new StringWriter())
@@ -47,6 +46,5 @@ namespace Serilog.Sinks.Unity3D
                     }
                 }
             });
-        }
     }
 }
