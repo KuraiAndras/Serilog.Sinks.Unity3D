@@ -1,22 +1,38 @@
 ﻿using Serilog;
 using Serilog.Sinks.Unity3D;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
 public class SimpleLogger : MonoBehaviour
 {
-    private Button _button;
+    [SerializeField] private Button _infoButton;
+    [SerializeField] private Button _warningButton;
+    [SerializeField] private Button _errorButton;
     private Serilog.ILogger _logger;
 
     private void Awake()
     {
-        _button = GetComponent<Button>();
         _logger = new LoggerConfiguration()
             .MinimumLevel.Information()
             .WriteTo.Unity3D()
             .CreateLogger();
     }
 
-    private void Start() => _button.onClick.AddListener(() => _logger.Information("Hello"));
+    private void Start()
+    {
+        _infoButton.onClick.AddListener(() => _logger.Information("This is an info"));
+        _warningButton.onClick.AddListener(() => _logger.Warning("This is a warning"));
+        _errorButton.onClick.AddListener(() =>
+        {
+            try
+            {
+                throw new InvalidOperationException("Invalid stuff");
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "This is an error");
+            }
+        });
+    }
 }
