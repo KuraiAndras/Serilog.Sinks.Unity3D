@@ -2,46 +2,49 @@
 using MainThreadDispatcher.Unity;
 using Serilog.Core;
 using Serilog.Events;
+using Serilog.Formatting;
 using System;
+using System.IO;
 using UnityEngine;
 
 namespace Serilog.Sinks.Unity3D
 {
     public sealed class Unity3DLogEventSink : ILogEventSink
     {
-        private readonly IFormatProvider _formatProvider;
+        private readonly ITextFormatter _formatter;
         private readonly IMainThreadDispatcher _dispatcher;
 
-        public Unity3DLogEventSink(IFormatProvider formatProvider)
+        public Unity3DLogEventSink(ITextFormatter formatter)
         {
-            _formatProvider = formatProvider;
+            _formatter = formatter;
             _dispatcher = UnityMainThreadDispatcherExtensions.Instance;
         }
 
         public void Emit(LogEvent logEvent)
         {
-            var message = logEvent.RenderMessage(_formatProvider);
-
             _dispatcher.Invoke(() =>
             {
-                switch (logEvent.Level)
+                using (var buffer = new StringWriter())
                 {
-                    case LogEventLevel.Verbose:
-                    case LogEventLevel.Debug:
-                    case LogEventLevel.Information:
-                        Debug.Log(message);
-                        break;
-                    case LogEventLevel.Warning:
-                        Debug.LogWarning(message);
-                        break;
-                    case LogEventLevel.Error:
-                        Debug.LogError(message);
-                        break;
-                    case LogEventLevel.Fatal:
-                        Debug.LogError(message);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException("Unknown log level");
+                    _formatter.Format(logEvent, buffer);
+
+                    switch (logEvent.Level)
+                    {
+                        case LogEventLevel.Verbose:
+                        case LogEventLevel.Debug:
+                        case LogEventLevel.Information:
+                            Debug.Log(buffer.ToString().Trim());
+                            break;
+                        case LogEventLevel.Warning:
+                            Debug.LogWarning(buffer.ToString().Trim());
+                            break;
+                        case LogEventLevel.Error:
+                        case LogEventLevel.Fatal:
+                            Debug.LogError(buffer.ToString().Trim());
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException("Unknown log level");
+                    }
                 }
             });
         }
