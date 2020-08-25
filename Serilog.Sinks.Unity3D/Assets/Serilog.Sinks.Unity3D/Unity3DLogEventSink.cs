@@ -22,7 +22,28 @@ namespace Serilog.Sinks.Unity3D
         {
             var message = logEvent.RenderMessage(_formatProvider);
 
-            _dispatcher.Invoke(() => Debug.Log(message));
+            _dispatcher.Invoke(() =>
+            {
+                switch (logEvent.Level)
+                {
+                    case LogEventLevel.Verbose:
+                    case LogEventLevel.Debug:
+                    case LogEventLevel.Information:
+                        Debug.Log(message);
+                        break;
+                    case LogEventLevel.Warning:
+                        Debug.LogWarning(message);
+                        break;
+                    case LogEventLevel.Error:
+                        Debug.LogError(message);
+                        break;
+                    case LogEventLevel.Fatal:
+                        Debug.LogError(message);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Unknown log level");
+                }
+            });
         }
     }
 }
