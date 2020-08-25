@@ -9,7 +9,7 @@ namespace Serilog.Sinks.Unity3D
 {
     public static class UnitySinkExtensions
     {
-        private const string DefaultDebugOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
+        private const string DefaultDebugOutputTemplate = "[{Level:u3}] {Message:lj}{NewLine}{Exception}";
 
         /// <summary>
         /// Writes log events to <see cref="UnityEngine.Debug"/>.
