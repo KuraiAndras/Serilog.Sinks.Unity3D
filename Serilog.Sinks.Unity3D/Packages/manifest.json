@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.mainthreaddispatcher.unity": "1.1.1",
     "com.serilog.sinks.unity3d.dependencies": "file:../../Serilog.Sinks.Unity3D.Dependencies/bin/Debug/net472",
     "com.unity.collab-proxy": "1.3.9",
     "com.unity.ide.rider": "1.2.1",

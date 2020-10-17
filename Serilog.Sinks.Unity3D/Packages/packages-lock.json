@@ -1,12 +1,5 @@
 {
   "dependencies": {
-    "com.mainthreaddispatcher.unity": {
-      "version": "1.1.1",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://package.openupm.com"
-    },
     "com.serilog.sinks.unity3d.dependencies": {
       "version": "file:../../Serilog.Sinks.Unity3D.Dependencies/bin/Debug/net472",
       "depth": 0,
