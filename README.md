@@ -5,17 +5,29 @@
 Serilog sink for Unity3D, logs to Unity Debugger
 
 # Usage
-Set up [MainThreadDispatcher.Unity](https://github.com/KuraiAndras/MainThreadDispatcher.Unity)
 
-Since version 1.0.1 you need to provide the following dlls:
+Install it through OpenUPM or use the Unitypackage from the Releases.
 
-- Serilog
-- MainThreadDispatcher
+```bash
+openupm add com.serilog.sinks.unity3d
+```
 
-Then use your sink:
+Place Serilog.dll to your assets folder, then use the library:
+
 ```c#
 var logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Unity3D()
     .CreateLogger();
 ```
+
+## For versions before 2.0.0
+
+Set up [MainThreadDispatcher.Unity](https://github.com/KuraiAndras/MainThreadDispatcher.Unity)
+
+## Upgrade from 1.0.0 to 1.0.1
+
+You need to provide the following dlls:
+
+- Serilog
+- MainThreadDispatcher
