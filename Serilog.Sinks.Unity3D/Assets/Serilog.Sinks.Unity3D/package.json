@@ -1,6 +1,11 @@
 {
     "name": "com.serilog.sinks.unity3d",
-    "author": "Kurai András",
     "displayName": "Serilog Sink for Unity 3D",
-    "version": "2.0.0"
+    "version": "2.0.1",
+    "unity": "2019.2",
+    "author": {
+        "name": "Kurai András",
+        "email": "k.andras9642@gmail.com",
+        "url": "https://github.com/KuraiAndras/Serilog.Sinks.Unity3D"
+    }
 }
