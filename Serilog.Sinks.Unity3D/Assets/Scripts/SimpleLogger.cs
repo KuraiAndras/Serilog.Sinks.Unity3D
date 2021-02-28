@@ -8,10 +8,10 @@ using UnityEngine.UI;
 
 public class SimpleLogger : MonoBehaviour
 {
-    [SerializeField] private Button _infoButton;
-    [SerializeField] private Button _warningButton;
-    [SerializeField] private Button _errorButton;
-    [SerializeField] private Button _threadButton;
+    [SerializeField] private Button _infoButton = default;
+    [SerializeField] private Button _warningButton = default;
+    [SerializeField] private Button _errorButton = default;
+    [SerializeField] private Button _threadButton = default;
 
     private Serilog.ILogger _logger;
 
