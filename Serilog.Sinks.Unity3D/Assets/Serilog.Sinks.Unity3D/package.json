@@ -1,7 +1,7 @@
 {
     "name": "com.serilog.sinks.unity3d",
     "displayName": "Serilog Sink for Unity 3D",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "unity": "2019.2",
     "license": "MIT",
     "licensesUrl": "https://github.com/KuraiAndras/Serilog.Sinks.Unity3D/blob/master/LICENSE.md",
