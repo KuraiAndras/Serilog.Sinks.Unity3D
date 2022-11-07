@@ -3,6 +3,10 @@
     "displayName": "Serilog Sink for Unity 3D",
     "version": "2.0.1",
     "unity": "2019.2",
+    "license": "MIT",
+    "licensesUrl": "https://github.com/KuraiAndras/Serilog.Sinks.Unity3D/blob/master/LICENSE.md",
+    "changelogUrl": "https://github.com/KuraiAndras/Serilog.Sinks.Unity3D/blob/master/CHANGELOG.md",
+    "documentationUrl": "https://github.com/KuraiAndras/Serilog.Sinks.Unity3D/blob/master/README.md",
     "author": {
         "name": "Kurai András",
         "email": "k.andras9642@gmail.com",
