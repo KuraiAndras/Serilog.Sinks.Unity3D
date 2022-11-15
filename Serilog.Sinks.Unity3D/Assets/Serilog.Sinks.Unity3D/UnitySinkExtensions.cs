@@ -4,6 +4,7 @@ using Serilog.Events;
 using Serilog.Formatting;
 using Serilog.Formatting.Display;
 using System;
+using System.Collections.Generic;
 
 namespace Serilog.Sinks.Unity3D
 {
@@ -52,12 +53,23 @@ namespace Serilog.Sinks.Unity3D
             this LoggerSinkConfiguration sinkConfiguration,
             ITextFormatter formatter,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
-            LoggingLevelSwitch levelSwitch = null)
+            LoggingLevelSwitch levelSwitch = null,
+            UnityEngine.ILogger logger = null)
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
 
-            return sinkConfiguration.Sink(new Unity3DLogEventSink(formatter), restrictedToMinimumLevel, levelSwitch);
+            return sinkConfiguration.Sink(new Unity3DLogEventSink(formatter, logger), restrictedToMinimumLevel, levelSwitch);
+        }
+
+
+        public static ILogger WithUnityContext(this ILogger logger, UnityEngine.Object context)
+        {
+            int id = context.GetInstanceID();
+#if UNITY_EDITOR
+            Unity3DLogEventSink._objectstoLog.TryAdd(id, context);
+#endif
+            return logger.ForContext(Unity3DLogEventSink.UNITY_CONTEXT_KEY, id);
         }
     }
 }
