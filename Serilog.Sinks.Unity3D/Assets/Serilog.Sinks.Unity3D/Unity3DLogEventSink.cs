@@ -4,6 +4,7 @@ using Serilog.Formatting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Serilog.Sinks.Unity3D
@@ -42,13 +43,15 @@ namespace Serilog.Sinks.Unity3D
                     _ => throw new ArgumentOutOfRangeException(nameof(logEvent.Level), "Unknown log level")
                 };
 
+                object message = buffer.ToString().Trim();
+
                 if (TryGetContext(logEvent, out var context))
                 {
-                    _logger.Log(level, "", buffer.ToString().Trim(), context);
+                    _logger.Log(level, message, context);
                 }
                 else
                 {
-                    _logger.Log(level, buffer.ToString().Trim());
+                    _logger.Log(level, message);
                 }
             }
         }
