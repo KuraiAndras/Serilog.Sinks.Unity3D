@@ -1,10 +1,9 @@
-﻿using Serilog.Core;
-using Serilog.Events;
-using Serilog.Formatting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
+using Serilog.Core;
+using Serilog.Events;
+using Serilog.Formatting;
 using UnityEngine;
 
 namespace Serilog.Sinks.Unity3D
@@ -21,7 +20,7 @@ namespace Serilog.Sinks.Unity3D
         public Unity3DLogEventSink(ITextFormatter formatter, UnityEngine.ILogger logger = null)
         {
             _formatter = formatter;
-            _logger = Debug.unityLogger;
+            _logger = logger ?? Debug.unityLogger;
         }
 
         public void Emit(LogEvent logEvent)
