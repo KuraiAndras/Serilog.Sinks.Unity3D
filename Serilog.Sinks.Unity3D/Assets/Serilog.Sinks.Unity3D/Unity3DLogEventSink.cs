@@ -29,28 +29,34 @@ namespace Serilog.Sinks.Unity3D
             {
                 _formatter.Format(logEvent, buffer);
 
-                var level = logEvent.Level switch
+                LogType logType = LogType.Log;
+                switch (logEvent.Level)
                 {
-                    LogEventLevel.Verbose
-                    or LogEventLevel.Debug
-                    or LogEventLevel.Information => LogType.Log,
-
-                    LogEventLevel.Warning => LogType.Warning,
-
-                    LogEventLevel.Error or LogEventLevel.Fatal => LogType.Error,
-
-                    _ => throw new ArgumentOutOfRangeException(nameof(logEvent.Level), "Unknown log level")
-                };
+                    case LogEventLevel.Verbose:
+                    case LogEventLevel.Debug:
+                    case LogEventLevel.Information:
+                        logType = LogType.Log;
+                        break;
+                    case LogEventLevel.Warning:
+                        logType = LogType.Warning;
+                        break;
+                    case LogEventLevel.Error:
+                    case LogEventLevel.Fatal:
+                        logType = LogType.Error;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(logEvent.Level), "Unknown log level");
+                }
 
                 object message = buffer.ToString().Trim();
 
                 if (TryGetContext(logEvent, out var context))
                 {
-                    _logger.Log(level, message, context);
+                    _logger.Log(logType, message, context);
                 }
                 else
                 {
-                    _logger.Log(level, message);
+                    _logger.Log(logType, message);
                 }
             }
         }
