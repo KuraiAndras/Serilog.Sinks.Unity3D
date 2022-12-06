@@ -79,3 +79,4 @@ crashlytics-build.properties
 !Packages/
 !*.meta
 !*.rsp
+UserSettings/
