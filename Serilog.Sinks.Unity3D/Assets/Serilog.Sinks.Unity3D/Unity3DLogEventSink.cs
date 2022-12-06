@@ -11,34 +11,30 @@ namespace Serilog.Sinks.Unity3D
     public sealed class Unity3DLogEventSink : ILogEventSink
     {
         private readonly ITextFormatter _formatter;
+        private readonly UnityEngine.ILogger _unityLogger;
 
-        public Unity3DLogEventSink(ITextFormatter formatter) => _formatter = formatter;
+        public Unity3DLogEventSink(ITextFormatter formatter, UnityEngine.ILogger unityLogger)
+        {
+            _formatter = formatter;
+            _unityLogger = unityLogger;
+        }
 
         public void Emit(LogEvent logEvent)
         {
             using var buffer = new StringWriter();
 
             _formatter.Format(logEvent, buffer);
-
-            switch (logEvent.Level)
+            var logType = logEvent.Level switch
             {
-                case LogEventLevel.Verbose:
-                case LogEventLevel.Debug:
-                case LogEventLevel.Information:
-                    Debug.Log(buffer.ToString().Trim());
-                    break;
+                LogEventLevel.Verbose or LogEventLevel.Debug or LogEventLevel.Information => LogType.Log,
+                LogEventLevel.Warning => LogType.Warning,
+                LogEventLevel.Error or LogEventLevel.Fatal => LogType.Error,
+                _ => throw new ArgumentOutOfRangeException(nameof(logEvent.Level), "Unknown log level"),
+            };
 
-                case LogEventLevel.Warning:
-                    Debug.LogWarning(buffer.ToString().Trim());
-                    break;
+            var message = buffer.ToString().Trim();
 
-                case LogEventLevel.Error:
-                case LogEventLevel.Fatal:
-                    Debug.LogError(buffer.ToString().Trim());
-                    break;
-
-                default: throw new ArgumentOutOfRangeException(nameof(logEvent.Level), "Unknown log level");
-            }
+            _unityLogger.Log(logType, message);
         }
     }
 }
