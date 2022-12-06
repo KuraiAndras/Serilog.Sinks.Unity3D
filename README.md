@@ -22,7 +22,7 @@ You need add Serilog to your project. Your usual options:
 
 ### Creating the logger
 
-```c#
+```csharp
 var logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Unity3D()
@@ -31,7 +31,7 @@ var logger = new LoggerConfiguration()
 
 If you have a custom implementation of Unity's `ILogger` interface, then you can log to that:
 
-```c#
+```csharp
 ILogger myCustomLogger = new MyCustomLogger();
 
 var logger = new LoggerConfiguration()
@@ -41,6 +41,26 @@ var logger = new LoggerConfiguration()
 ```
 
 If no logger is provided the library will use `UnityEngine.Debug.unityLogger` (which is equivalent of using `UnityEngine.Debug.Log()` methods)
+
+### Unity log extras
+
+You can provide the `UnityEngine.Object` context[^EnrichUnityContext] and tag parameters for the logger:
+
+```csharp
+public class MyObject : MonoBehaviour
+{
+    // ...
+    private ILogger _logger = new();
+
+    public void DoLog()
+    {
+        _logger
+            .ForContext(this)
+            .WithUnityTag("My custom tag")
+            .Information("This is an info log");
+    }
+}
+```
 
 ## Migration guide
 
@@ -54,3 +74,5 @@ You need to provide the following DLLs:
 
 - Serilog
 - MainThreadDispatcher
+
+[^EnrichUnityContext]: This is done with a new extension method override which explicitly accepts `UnityEngine.Object`.

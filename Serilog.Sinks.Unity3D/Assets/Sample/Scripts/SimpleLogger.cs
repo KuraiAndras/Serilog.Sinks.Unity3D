@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Diagnostics;
 using System.Threading;
 using Serilog;
@@ -12,12 +13,12 @@ namespace Sample.Scripts
 {
     public class SimpleLogger : MonoBehaviour
     {
-        [SerializeField] private Button _infoButton = default;
-        [SerializeField] private Button _warningButton = default;
-        [SerializeField] private Button _errorButton = default;
-        [SerializeField] private Button _threadButton = default;
+        [SerializeField] private Button _infoButton = default!;
+        [SerializeField] private Button _warningButton = default!;
+        [SerializeField] private Button _errorButton = default!;
+        [SerializeField] private Button _threadButton = default!;
 
-        private Serilog.ILogger _logger;
+        private Serilog.ILogger _logger = default!;
 
         private void Awake() =>
             _logger = new LoggerConfiguration()
@@ -27,8 +28,8 @@ namespace Sample.Scripts
 
         private void Start()
         {
-            _infoButton.onClick.AddListener(() => _logger.Information("This is an info"));
-            _warningButton.onClick.AddListener(() => _logger.Warning("This is a warning"));
+            _infoButton.onClick.AddListener(() => _logger.ForContext(this).WithUnityTag("Info tag").Information("This is an info"));
+            _warningButton.onClick.AddListener(() => _logger.ForContext(this).WithUnityTag("Warning tag").Warning("This is a warning"));
             _errorButton.onClick.AddListener(() =>
             {
                 try
@@ -37,7 +38,7 @@ namespace Sample.Scripts
                 }
                 catch (Exception e)
                 {
-                    _logger.Error(e, "This is an error");
+                    _logger.ForContext(this).WithUnityTag("Error tag").Error(e, "This is an error");
                 }
             });
             _threadButton.onClick.AddListener(() =>
@@ -47,7 +48,7 @@ namespace Sample.Scripts
                 ThreadPool.QueueUserWorkItem(state =>
                 {
                     stopWatch.Stop();
-                    _logger.Information("Log from thread {Id}, Invoke took: {Elapsed}", Thread.CurrentThread.ManagedThreadId, stopWatch.Elapsed);
+                    _logger.ForContext(this).WithUnityTag("Thread tag").Information("Log from thread {Id}, Invoke took: {Elapsed}", Thread.CurrentThread.ManagedThreadId, stopWatch.Elapsed);
                 });
             });
         }

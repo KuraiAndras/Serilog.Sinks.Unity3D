@@ -13,7 +13,7 @@ namespace Serilog.Sinks.Unity3D
         private const string DefaultDebugOutputTemplate = "[{Level:u3}] {Message:lj}{NewLine}{Exception}";
 
         /// <summary>
-        /// Writes log events to <see cref="UnityEngine.Debug"/>.
+        /// Writes log events to <see cref="UnityEngine.ILogger"/>. Defaults to <see cref="UnityEngine.Debug.unityLogger"/>.
         /// </summary>
         /// <param name="sinkConfiguration">Logger sink configuration.</param>
         /// <param name="restrictedToMinimumLevel">The minimum level for
@@ -45,7 +45,7 @@ namespace Serilog.Sinks.Unity3D
         }
 
         /// <summary>
-        /// Writes log events to <see cref="UnityEngine.Debug"/>.
+        /// Writes log events to <see cref="UnityEngine.ILogger"/>. Defaults to <see cref="UnityEngine.Debug.unityLogger"/>.
         /// </summary>
         /// <param name="sinkConfiguration">Logger sink configuration.</param>
         /// <param name="formatter">Controls the rendering of log events into text, for example to log JSON. To
