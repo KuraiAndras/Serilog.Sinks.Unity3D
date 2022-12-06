@@ -1,4 +1,5 @@
-﻿using Serilog.Configuration;
+﻿#nullable enable
+using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting;
@@ -27,8 +28,8 @@ namespace Serilog.Sinks.Unity3D
             this LoggerSinkConfiguration sinkConfiguration,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
             string outputTemplate = DefaultDebugOutputTemplate,
-            IFormatProvider formatProvider = null,
-            LoggingLevelSwitch levelSwitch = null)
+            IFormatProvider? formatProvider = null,
+            LoggingLevelSwitch? levelSwitch = null)
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (outputTemplate == null) throw new ArgumentNullException(nameof(outputTemplate));
@@ -52,7 +53,7 @@ namespace Serilog.Sinks.Unity3D
             this LoggerSinkConfiguration sinkConfiguration,
             ITextFormatter formatter,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum,
-            LoggingLevelSwitch levelSwitch = null)
+            LoggingLevelSwitch? levelSwitch = null)
         {
             if (sinkConfiguration == null) throw new ArgumentNullException(nameof(sinkConfiguration));
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
