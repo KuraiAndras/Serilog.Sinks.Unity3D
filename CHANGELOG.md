@@ -1,9 +1,9 @@
-# Cangelog
+# Changelog
 
 ## 3.0.0
 - Update minimum Unity version to 2021.3
 - Update Serilog dependency to 2.12.0
-- Use xoofx's UnityNuget for development
+- Use xoofx's UnityNuGet for development
 ## 2.0.2
 - Fix package metadata. Add license, changelog, documentation
 ## 2.0.1
@@ -16,3 +16,4 @@
 - Better formatting
 - Exceptions are properly written to debug
 - Map LogEventLevel to Unity debug level
+- 
