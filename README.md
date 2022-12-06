@@ -15,7 +15,7 @@ openupm add com.serilog.sinks.unity3d
 
 ### Dependencies
 
-You need add Serilog to your project. Your usual options:
+You need add Serilog[^SerilogVersion] to your project. Your usual options:
 - [Xoofx's UnityNuGet server](https://github.com/xoofx/UnityNuGet) (preferred)
 - Manual add the Serilog DLL to your assets folder
 - [NuGetForUnity](https://github.com/GlitchEnzo/NuGetForUnity)
@@ -76,3 +76,4 @@ You need to provide the following DLLs:
 - MainThreadDispatcher
 
 [^EnrichUnityContext]: This is done with a new extension method override which explicitly accepts `UnityEngine.Object`.
+[^SerilogVersion]: Version 2.12.0 or later
