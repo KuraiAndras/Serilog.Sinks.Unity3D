@@ -44,7 +44,7 @@ If no logger is provided the library will use `UnityEngine.Debug.unityLogger` (w
 
 ### Unity log extras
 
-You can provide the `UnityEngine.Object` context[^1] and tag parameters for the logger:
+You can provide the `UnityEngine.Object` context[^EnrichUnityContext] and tag parameters for the logger:
 
 ```csharp
 public class MyObject : MonoBehaviour
@@ -62,8 +62,6 @@ public class MyObject : MonoBehaviour
 }
 ```
 
-[^1]: This is done with a new extension method override which explicitly accepts `UnityEngine.Object`.
-
 ## Migration guide
 
 ### For versions before 2.0.0
@@ -76,3 +74,5 @@ You need to provide the following DLLs:
 
 - Serilog
 - MainThreadDispatcher
+
+[^EnrichUnityContext]: This is done with a new extension method override which explicitly accepts `UnityEngine.Object`.
