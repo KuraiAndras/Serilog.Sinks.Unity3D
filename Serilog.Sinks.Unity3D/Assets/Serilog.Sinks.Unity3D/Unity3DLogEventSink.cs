@@ -32,9 +32,17 @@ namespace Serilog.Sinks.Unity3D
                 _ => throw new ArgumentOutOfRangeException(nameof(logEvent.Level), "Unknown log level"),
             };
 
-            var message = buffer.ToString().Trim();
+            object message = buffer.ToString().Trim();
 
-            _unityLogger.Log(logType, message);
+            if (logEvent.Properties.TryGetValue(UnityObjectEnricher.UnityContextKey, out var propertyValue)
+                && propertyValue is ScalarValue scalarValue && scalarValue.Value is UnityEngine.Object unityContext)
+            {
+                _unityLogger.Log(logType, message, unityContext);
+            }
+            else
+            {
+                _unityLogger.Log(logType, message);
+            }
         }
     }
 }
