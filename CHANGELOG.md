@@ -4,6 +4,8 @@
 - Update minimum Unity version to 2021.3
 - Update Serilog dependency to 2.12.0
 - Use xoofx's UnityNuGet for development
+- Add Unity object context logging
+- Add Unity tag logging
 ## 2.0.2
 - Fix package metadata. Add license, changelog, documentation
 ## 2.0.1
@@ -16,4 +18,3 @@
 - Better formatting
 - Exceptions are properly written to debug
 - Map LogEventLevel to Unity debug level
-- 
