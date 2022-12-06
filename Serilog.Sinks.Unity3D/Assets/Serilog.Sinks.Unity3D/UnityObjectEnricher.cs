@@ -9,8 +9,8 @@ namespace Serilog
 
         private readonly LogEventProperty _property;
 
-        public UnityObjectEnricher(UnityEngine.Object value) =>
-            _property = new LogEventProperty(UnityContextKey, new ScalarValue(value));
+        public UnityObjectEnricher(UnityEngine.Object context) =>
+            _property = new LogEventProperty(UnityContextKey, new ScalarValue(context));
 
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory) =>
             logEvent.AddPropertyIfAbsent(_property);

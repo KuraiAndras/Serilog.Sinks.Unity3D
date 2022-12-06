@@ -34,10 +34,33 @@ namespace Serilog.Sinks.Unity3D
 
             object message = buffer.ToString().Trim();
 
-            if (logEvent.Properties.TryGetValue(UnityObjectEnricher.UnityContextKey, out var propertyValue)
-                && propertyValue is ScalarValue scalarValue && scalarValue.Value is UnityEngine.Object unityContext)
+            UnityEngine.Object? unityContext = null;
+            if (logEvent.Properties.TryGetValue(UnityObjectEnricher.UnityContextKey, out var contextPropertyValue) && contextPropertyValue is ScalarValue contextScalarValue)
             {
-                _unityLogger.Log(logType, message, unityContext);
+                unityContext = contextScalarValue.Value as UnityEngine.Object;
+            }
+
+            string? unityTag = null;
+            if (logEvent.Properties.TryGetValue(UnityTagEnricher.UnityTagKey, out var tagPropertyValue) && tagPropertyValue is ScalarValue tagScalarValue)
+            {
+                unityTag = tagScalarValue.Value as string;
+            }
+
+
+            if (unityContext != null)
+            {
+                if (unityTag != null)
+                {
+                    _unityLogger.Log(logType, unityTag, message, unityContext);
+                }
+                else
+                {
+                    _unityLogger.Log(logType, message, unityContext);
+                }
+            }
+            else if (unityTag != null)
+            {
+                _unityLogger.Log(logType, unityTag, message);
             }
             else
             {

@@ -27,8 +27,8 @@ namespace Sample.Scripts
 
         private void Start()
         {
-            _infoButton.onClick.AddListener(() => _logger.ForContext(this).Information("This is an info"));
-            _warningButton.onClick.AddListener(() => _logger.ForContext(this).Warning("This is a warning"));
+            _infoButton.onClick.AddListener(() => _logger.ForContext(this).WithUnityTag("Info tag").Information("This is an info"));
+            _warningButton.onClick.AddListener(() => _logger.ForContext(this).WithUnityTag("Warning tag").Warning("This is a warning"));
             _errorButton.onClick.AddListener(() =>
             {
                 try
@@ -37,7 +37,7 @@ namespace Sample.Scripts
                 }
                 catch (Exception e)
                 {
-                    _logger.ForContext(this).Error(e, "This is an error");
+                    _logger.ForContext(this).WithUnityTag("Error tag").Error(e, "This is an error");
                 }
             });
             _threadButton.onClick.AddListener(() =>
@@ -47,7 +47,7 @@ namespace Sample.Scripts
                 ThreadPool.QueueUserWorkItem(state =>
                 {
                     stopWatch.Stop();
-                    _logger.ForContext(this).Information("Log from thread {Id}, Invoke took: {Elapsed}", Thread.CurrentThread.ManagedThreadId, stopWatch.Elapsed);
+                    _logger.ForContext(this).WithUnityTag("Thread tag").Information("Log from thread {Id}, Invoke took: {Elapsed}", Thread.CurrentThread.ManagedThreadId, stopWatch.Elapsed);
                 });
             });
         }
