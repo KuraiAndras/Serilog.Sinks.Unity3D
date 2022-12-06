@@ -1,4 +1,5 @@
-﻿using Serilog.Core;
+﻿#nullable enable
+using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting;
 using System;
@@ -10,34 +11,60 @@ namespace Serilog.Sinks.Unity3D
     public sealed class Unity3DLogEventSink : ILogEventSink
     {
         private readonly ITextFormatter _formatter;
+        private readonly UnityEngine.ILogger _unityLogger;
 
-        public Unity3DLogEventSink(ITextFormatter formatter) => _formatter = formatter;
+        public Unity3DLogEventSink(ITextFormatter formatter, UnityEngine.ILogger unityLogger)
+        {
+            _formatter = formatter;
+            _unityLogger = unityLogger;
+        }
 
         public void Emit(LogEvent logEvent)
         {
-            using (var buffer = new StringWriter())
+            using var buffer = new StringWriter();
+
+            _formatter.Format(logEvent, buffer);
+            var logType = logEvent.Level switch
             {
-                _formatter.Format(logEvent, buffer);
+                LogEventLevel.Verbose or LogEventLevel.Debug or LogEventLevel.Information => LogType.Log,
+                LogEventLevel.Warning => LogType.Warning,
+                LogEventLevel.Error or LogEventLevel.Fatal => LogType.Error,
+                _ => throw new ArgumentOutOfRangeException(nameof(logEvent.Level), "Unknown log level"),
+            };
 
-                switch (logEvent.Level)
+            object message = buffer.ToString().Trim();
+
+            UnityEngine.Object? unityContext = null;
+            if (logEvent.Properties.TryGetValue(UnityObjectEnricher.UnityContextKey, out var contextPropertyValue) && contextPropertyValue is ScalarValue contextScalarValue)
+            {
+                unityContext = contextScalarValue.Value as UnityEngine.Object;
+            }
+
+            string? unityTag = null;
+            if (logEvent.Properties.TryGetValue(UnityTagEnricher.UnityTagKey, out var tagPropertyValue) && tagPropertyValue is ScalarValue tagScalarValue)
+            {
+                unityTag = tagScalarValue.Value as string;
+            }
+
+
+            if (unityContext != null)
+            {
+                if (unityTag != null)
                 {
-                    case LogEventLevel.Verbose:
-                    case LogEventLevel.Debug:
-                    case LogEventLevel.Information:
-                        Debug.Log(buffer.ToString().Trim());
-                        break;
-
-                    case LogEventLevel.Warning:
-                        Debug.LogWarning(buffer.ToString().Trim());
-                        break;
-
-                    case LogEventLevel.Error:
-                    case LogEventLevel.Fatal:
-                        Debug.LogError(buffer.ToString().Trim());
-                        break;
-
-                    default: throw new ArgumentOutOfRangeException(nameof(logEvent.Level), "Unknown log level");
+                    _unityLogger.Log(logType, unityTag, message, unityContext);
                 }
+                else
+                {
+                    _unityLogger.Log(logType, message, unityContext);
+                }
+            }
+            else if (unityTag != null)
+            {
+                _unityLogger.Log(logType, unityTag, message);
+            }
+            else
+            {
+                _unityLogger.Log(logType, message);
             }
         }
     }
