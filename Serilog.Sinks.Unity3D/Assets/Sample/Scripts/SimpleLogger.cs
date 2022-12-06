@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Diagnostics;
 using System.Threading;
 using Serilog;
@@ -12,12 +13,12 @@ namespace Sample.Scripts
 {
     public class SimpleLogger : MonoBehaviour
     {
-        [SerializeField] private Button _infoButton = default;
-        [SerializeField] private Button _warningButton = default;
-        [SerializeField] private Button _errorButton = default;
-        [SerializeField] private Button _threadButton = default;
+        [SerializeField] private Button _infoButton = default!;
+        [SerializeField] private Button _warningButton = default!;
+        [SerializeField] private Button _errorButton = default!;
+        [SerializeField] private Button _threadButton = default!;
 
-        private Serilog.ILogger _logger;
+        private Serilog.ILogger _logger = default!;
 
         private void Awake() =>
             _logger = new LoggerConfiguration()
