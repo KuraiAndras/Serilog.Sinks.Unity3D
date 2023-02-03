@@ -11,5 +11,8 @@
         "name": "Kurai András",
         "email": "k.andras9642@gmail.com",
         "url": "https://github.com/KuraiAndras/Serilog.Sinks.Unity3D"
+    },
+    "dependencies": {
+        "org.nuget.serilog": "2.12.0"
     }
 }
