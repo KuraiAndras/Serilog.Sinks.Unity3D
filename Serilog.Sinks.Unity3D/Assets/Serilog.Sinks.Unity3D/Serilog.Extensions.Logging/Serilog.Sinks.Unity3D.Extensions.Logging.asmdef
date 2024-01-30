@@ -1,0 +1,28 @@
+{
+    "name": "Serilog.Sinks.Unity3D.Extensions.Logging",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ebcad7e3972724c43aa595f17cf4d103"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Serilog.dll",
+        "Serilog.Extensions.Logging.dll",
+        "Microsoft.Extensions.Logging.Abstractions.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "HAS_SERILOG_EXTENSIONS_LOGGING"
+    ],
+    "versionDefines": [
+        {
+            "name": "org.nuget.serilog.extensions.logging",
+            "expression": "",
+            "define": "HAS_SERILOG_EXTENSIONS_LOGGING"
+        }
+    ],
+    "noEngineReferences": false
+}
