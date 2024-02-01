@@ -3,6 +3,7 @@ using Serilog.Context;
 using System.Collections.Generic;
 using System;
 using System.Threading;
+using UnityEngine;
 
 namespace Serilog.Sinks.Unity3D
 {
@@ -13,7 +14,7 @@ namespace Serilog.Sinks.Unity3D
     public class SerilogUnityContextScopeLogger : Microsoft.Extensions.Logging.ILogger
     {
         private readonly Microsoft.Extensions.Logging.ILogger _logger;
-        private AsyncLocal<List<UnityContextScope>> _unityContextScopeStack = new AsyncLocal<List<UnityContextScope>>();
+        private AsyncLocal<UnityContextScope> _unityContextScopeStack = new AsyncLocal<UnityContextScope>();
 
         public SerilogUnityContextScopeLogger(Microsoft.Extensions.Logging.ILogger logger)
         {
@@ -22,16 +23,28 @@ namespace Serilog.Sinks.Unity3D
 
         public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            if (_unityContextScopeStack.Value?.Count > 0)
+            if (_unityContextScopeStack.Value != null)
             {
-                var unityContext = _unityContextScopeStack.Value[_unityContextScopeStack.Value.Count - 1].UnityContext;
+                var unityContext = _unityContextScopeStack.Value.UnityContext;
                 if (ReferenceEquals(unityContext, null) == false)
                 {
-                    LogContext.PushProperty(UnityObjectEnricher.UnityContextKey, unityContext, destructureObjects: true);
-                    LogContext.PushProperty(UnityTagEnricher.UnityTagKey, unityContext.ToString());
+                    LogWithUnityContext(logLevel, eventId, state, exception, formatter, unityContext);
+                    return;
                 }
             }
 
+            _logger.Log(logLevel, eventId, state, exception, formatter);
+        }
+
+        private void LogWithUnityContext<TState>(
+            Microsoft.Extensions.Logging.LogLevel logLevel,
+            Microsoft.Extensions.Logging.EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter,
+            UnityEngine.Object unityContext)
+        {
+            LogContext.PushProperty(UnityObjectEnricher.UnityContextKey, unityContext, destructureObjects: true);
             _logger.Log(logLevel, eventId, state, exception, formatter);
         }
 
@@ -46,23 +59,21 @@ namespace Serilog.Sinks.Unity3D
 
             if (state is UnityEngine.Object unityContext)
             {
-                var unityContextScope = new UnityContextScope(this, scopeDisposable, unityContext);
-                AddUnityContextScope(unityContextScope);
-                return unityContextScope;
+                return _unityContextScopeStack.Value = new UnityContextScope(this, scopeDisposable, unityContext);
             }
 
             return scopeDisposable;
         }
 
-        private void AddUnityContextScope(UnityContextScope unityContextScope)
-        {
-            _unityContextScopeStack.Value ??= new List<UnityContextScope>(1);
-            _unityContextScopeStack.Value.Add(unityContextScope);
-        }
-
         private void RemoveUnityContextScope(UnityContextScope unityContextScope)
         {
-            _unityContextScopeStack.Value?.Remove(unityContextScope);
+            // In case one of the parent scopes has been disposed out-of-order, don't
+            // just blindly reinstate our own parent.
+            for (var scan = _unityContextScopeStack.Value; scan != null; scan = scan.Parent)
+            {
+                if (ReferenceEquals(scan, unityContextScope))
+                    _unityContextScopeStack.Value = unityContextScope.Parent;
+            }
         }
 
         private class UnityContextScope : IDisposable
@@ -71,6 +82,9 @@ namespace Serilog.Sinks.Unity3D
             private readonly IDisposable? _chainedDisposable;
 
             private readonly WeakReference<UnityEngine.Object> _unityContextReference;
+            private bool _disposed;
+
+            public UnityContextScope Parent { get; }
 
             public UnityEngine.Object? UnityContext
             {
@@ -88,10 +102,17 @@ namespace Serilog.Sinks.Unity3D
                 _logger = logger;
                 _chainedDisposable = chainedDisposable;
                 _unityContextReference = new WeakReference<UnityEngine.Object>(unityContext);
+
+                Parent = logger._unityContextScopeStack.Value;
             }
 
             public void Dispose()
             {
+                if (_disposed)
+                    return;
+
+                _disposed = true;
+
                 _logger.RemoveUnityContextScope(this);
                 _chainedDisposable?.Dispose();
             }
