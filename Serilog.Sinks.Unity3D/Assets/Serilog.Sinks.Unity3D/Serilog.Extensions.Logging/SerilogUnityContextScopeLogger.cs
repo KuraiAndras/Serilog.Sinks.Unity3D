@@ -11,14 +11,12 @@ namespace Serilog.Sinks.Unity3D
     /// </summary>
     public class SerilogUnityContextScopeLogger : Microsoft.Extensions.Logging.ILogger
     {
-        private SerilogUnityContextScopeLoggerProvider serilogForUnityLoggerProvider;
         private readonly Microsoft.Extensions.Logging.ILogger _logger;
 
         private Stack<UnityContextScope> _unityContextStack = new Stack<UnityContextScope>();
 
-        public SerilogUnityContextScopeLogger(SerilogUnityContextScopeLoggerProvider serilogForUnityLoggerProvider, Microsoft.Extensions.Logging.ILogger logger)
+        public SerilogUnityContextScopeLogger(Microsoft.Extensions.Logging.ILogger logger)
         {
-            this.serilogForUnityLoggerProvider = serilogForUnityLoggerProvider;
             _logger = logger;
         }
 

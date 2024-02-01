@@ -17,7 +17,7 @@ namespace Serilog.Sinks.Unity3D
 
         public Microsoft.Extensions.Logging.ILogger CreateLogger(string categoryName)
         {
-            return new SerilogUnityContextScopeLogger(this, _innerProvider.CreateLogger(categoryName));
+            return new SerilogUnityContextScopeLogger(_innerProvider.CreateLogger(categoryName));
         }
 
         public void Dispose()
