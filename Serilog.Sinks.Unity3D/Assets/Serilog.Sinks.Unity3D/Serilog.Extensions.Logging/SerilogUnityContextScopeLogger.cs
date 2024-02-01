@@ -24,6 +24,7 @@ namespace Serilog.Sinks.Unity3D
         }
         
         private readonly Microsoft.Extensions.Logging.ILogger _logger;
+        private readonly UnityObjectTransformerDelegate? _unityObjectTransformer;
         private AsyncLocal<UnityContextScope?>? _unityContextScope;
 
         private UnityContextScope? CurrentScope
@@ -32,9 +33,10 @@ namespace Serilog.Sinks.Unity3D
             set => (_unityContextScope ??= new AsyncLocal<UnityContextScope?>()).Value = value;
         }
 
-        public SerilogUnityContextScopeLogger(Microsoft.Extensions.Logging.ILogger logger)
+        public SerilogUnityContextScopeLogger(Microsoft.Extensions.Logging.ILogger logger, UnityObjectTransformerDelegate? unityObjectTransformer)
         {
             _logger = logger;
+            _unityObjectTransformer = unityObjectTransformer;
         }
 
         public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
@@ -71,20 +73,28 @@ namespace Serilog.Sinks.Unity3D
 
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
-            var scopeDisposable = _logger.BeginScope(state);
-
             if (state is UnityEngine.Object unityContext)
             {
-                if (SynchronizationContext.Current != _synchronizationContext)
+                IDisposable? scopeDisposable;
+
+                if (_unityObjectTransformer == null)
                 {
-                    throw new NotSupportedException("BeginScope(UnityEngine.Object) can only be used from the main thread.");
+                    if (SynchronizationContext.Current != _synchronizationContext)
+                    {
+                        throw new NotSupportedException("BeginScope(UnityEngine.Object) can only be used from the main thread.");
+                    }
+
+                    scopeDisposable = _logger.BeginScope(unityContext);
+                }
+                else
+                {
+                    scopeDisposable = _logger.BeginScope(_unityObjectTransformer(unityContext));
                 }
 
-                IDisposable? scopeDisposable = _logger.BeginScope(unityContext);
                 return CurrentScope = new UnityContextScope(this, scopeDisposable, unityContext);
             }
 
-            return scopeDisposable;
+            return _logger.BeginScope(state);
         }
 
         private class UnityContextScope : IDisposable

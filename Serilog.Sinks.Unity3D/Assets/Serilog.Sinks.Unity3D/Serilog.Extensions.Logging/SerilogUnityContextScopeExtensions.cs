@@ -36,15 +36,19 @@ namespace Serilog.Sinks.Unity3D
         /// <param name="dispose">When true, dispose <paramref name="logger"/> when the framework disposes the provider. If the
         /// logger is not specified but <paramref name="dispose"/> is true, the <see cref="Log.CloseAndFlush()"/> method will be
         /// called on the static <see cref="Log"/> class instead.</param>
+        /// <param name="unityObjectScopeTransformer">Can optionally be used to transform <see cref="UnityEngine.Object"/>s to
+        /// something else when calling <see cref="Microsoft.Extensions.Logging.ILogger.BeginScope{TState}(TState)"/> with an
+        /// <see cref="UnityEngine.Object"/> argument. Influences how this object gets represented in the logger's scope.</param>
         /// <returns>Reference to the supplied <paramref name="factory"/>.</returns>
         public static Microsoft.Extensions.Logging.ILoggerFactory AddSerilogWithUnityObjectScope(
             this Microsoft.Extensions.Logging.ILoggerFactory factory,
             Serilog.ILogger? logger = null,
-            bool dispose = false)
+            bool dispose = false,
+            UnityObjectTransformerDelegate? unityObjectScopeTransformer = null)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
 
-            factory.AddProvider(new SerilogUnityContextScopeLoggerProvider(logger, dispose));
+            factory.AddProvider(new SerilogUnityContextScopeLoggerProvider(logger, dispose, unityObjectScopeTransformer));
 
             return factory;
         }
