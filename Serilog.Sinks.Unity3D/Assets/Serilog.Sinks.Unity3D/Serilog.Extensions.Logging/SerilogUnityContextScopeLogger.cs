@@ -53,13 +53,25 @@ namespace Serilog.Sinks.Unity3D
         {
             private readonly SerilogUnityContextScopeLogger _logger;
             private readonly IDisposable? _chainedDisposable;
-            public UnityEngine.Object UnityContext { get; private set; }
+
+            private readonly WeakReference<UnityEngine.Object> _unityContextReference;
+
+            public UnityEngine.Object? UnityContext
+            {
+                get
+                {
+                    if (_unityContextReference.TryGetTarget(out var result) == false)
+                        return null;
+
+                    return result;
+                }
+            }
 
             public UnityContextScope(SerilogUnityContextScopeLogger logger, IDisposable? chainedDisposable, UnityEngine.Object unityContext)
             {
                 _logger = logger;
                 _chainedDisposable = chainedDisposable;
-                UnityContext = unityContext;
+                _unityContextReference = new WeakReference<UnityEngine.Object>(unityContext);
             }
 
             public void Dispose()
