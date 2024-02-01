@@ -87,17 +87,6 @@ namespace Serilog.Sinks.Unity3D
             return scopeDisposable;
         }
 
-        private void RemoveUnityContextScope(UnityContextScope unityContextScope)
-        {
-            // In case one of the parent scopes has been disposed out-of-order, don't
-            // just blindly reinstate our own parent.
-            for (var scan = _unityContextScopeStack.Value; scan != null; scan = scan.Parent)
-            {
-                if (ReferenceEquals(scan, unityContextScope))
-                    _unityContextScopeStack.Value = unityContextScope.Parent;
-            }
-        }
-
         private class UnityContextScope : IDisposable
         {
             private readonly SerilogUnityContextScopeLogger _logger;
@@ -135,7 +124,15 @@ namespace Serilog.Sinks.Unity3D
 
                 _disposed = true;
 
-                _logger.RemoveUnityContextScope(this);
+                // Just like in Serilog.Extensions.Logging.SerilogLoggerScope.Dispose():
+                // In case one of the parent scopes has been disposed out-of-order, don't
+                // just blindly reinstate our own parent.
+                for (var scan = _logger.CurrentScope; scan != null; scan = scan.Parent)
+                {
+                    if (ReferenceEquals(scan, this))
+                        _logger.CurrentScope = Parent;
+                }
+
                 _chainedDisposable?.Dispose();
             }
         }
