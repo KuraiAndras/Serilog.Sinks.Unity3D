@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using Serilog.Context;
-using System.Collections.Generic;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -13,8 +12,25 @@ namespace Serilog.Sinks.Unity3D
     /// </summary>
     public class SerilogUnityContextScopeLogger : Microsoft.Extensions.Logging.ILogger
     {
+         private static SynchronizationContext? _synchronizationContext;
+
+#if UNITY_EDITOR
+        [UnityEditor.InitializeOnLoadMethod]
+#endif
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void Initialize()
+        {
+            _synchronizationContext = SynchronizationContext.Current;
+        }
+        
         private readonly Microsoft.Extensions.Logging.ILogger _logger;
-        private AsyncLocal<UnityContextScope> _unityContextScopeStack = new AsyncLocal<UnityContextScope>();
+        private AsyncLocal<UnityContextScope?>? _unityContextScope;
+
+        private UnityContextScope? CurrentScope
+        {
+            get => _unityContextScope?.Value;
+            set => (_unityContextScope ??= new AsyncLocal<UnityContextScope?>()).Value = value;
+        }
 
         public SerilogUnityContextScopeLogger(Microsoft.Extensions.Logging.ILogger logger)
         {
@@ -23,9 +39,9 @@ namespace Serilog.Sinks.Unity3D
 
         public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            if (_unityContextScopeStack.Value != null)
+            if (_unityContextScope?.Value != null)
             {
-                var unityContext = _unityContextScopeStack.Value.UnityContext;
+                var unityContext = _unityContextScope.Value.UnityContext;
                 if (ReferenceEquals(unityContext, null) == false)
                 {
                     LogWithUnityContext(logLevel, eventId, state, exception, formatter, unityContext);
@@ -59,7 +75,13 @@ namespace Serilog.Sinks.Unity3D
 
             if (state is UnityEngine.Object unityContext)
             {
-                return _unityContextScopeStack.Value = new UnityContextScope(this, scopeDisposable, unityContext);
+                if (SynchronizationContext.Current != _synchronizationContext)
+                {
+                    throw new NotSupportedException("BeginScope(UnityEngine.Object) can only be used from the main thread.");
+                }
+
+                IDisposable? scopeDisposable = _logger.BeginScope(unityContext);
+                return CurrentScope = new UnityContextScope(this, scopeDisposable, unityContext);
             }
 
             return scopeDisposable;
@@ -84,7 +106,7 @@ namespace Serilog.Sinks.Unity3D
             private readonly WeakReference<UnityEngine.Object> _unityContextReference;
             private bool _disposed;
 
-            public UnityContextScope Parent { get; }
+            public UnityContextScope? Parent { get; }
 
             public UnityEngine.Object? UnityContext
             {
@@ -103,7 +125,7 @@ namespace Serilog.Sinks.Unity3D
                 _chainedDisposable = chainedDisposable;
                 _unityContextReference = new WeakReference<UnityEngine.Object>(unityContext);
 
-                Parent = logger._unityContextScopeStack.Value;
+                Parent = logger.CurrentScope;
             }
 
             public void Dispose()
@@ -117,5 +139,31 @@ namespace Serilog.Sinks.Unity3D
                 _chainedDisposable?.Dispose();
             }
         }
+
+        public class UnityObjectToStringWrapper
+        {
+            private UnityEngine.Object _unityContext;
+            private string? _toString = null;
+
+            public UnityObjectToStringWrapper(UnityEngine.Object unityContext)
+            {
+                _unityContext = unityContext;
+            }
+
+            public override string ToString()
+            {
+                if (_toString != null)
+                    return _toString;
+
+                _synchronizationContext?.Send(GetObjectName, null);
+                return _toString!;
+            }
+
+            private void GetObjectName(object state)
+            {
+                _toString = _unityContext.ToString();
+            }
+        }
+
     }
 }
